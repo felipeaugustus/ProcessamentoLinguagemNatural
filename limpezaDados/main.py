@@ -46,6 +46,10 @@ def remover_hashtags(texto):
 def remover_mencoes(texto):
     return re.sub(r"@\w+", "", str(texto))
 
+# 🔥 Remoção robusta de URLs (com ou sem http/www)
+def remover_urls(texto):
+    return re.sub(r"\b(?:https?://|www\.)?\S+\.\S+\S*", "", str(texto))
+
 def processar_stopwords(texto):
     palavras = str(texto).lower().split()
 
@@ -80,6 +84,7 @@ def tratar_arquivo(arquivo):
     # Limpeza inicial
     df["Texto"] = df["Texto"].apply(remover_hashtags)
     df["Texto"] = df["Texto"].apply(remover_mencoes)
+    df["Texto"] = df["Texto"].apply(remover_urls)
     df["Texto"] = df["Texto"].str.replace(r"\s+", " ", regex=True).str.strip()
 
     # Stop words
@@ -96,7 +101,6 @@ def tratar_arquivo(arquivo):
 # =========================================================
 # Lista de arquivos
 # =========================================================
-
 arquivos = [
     "20260319_190337.csv",
     "20260319_191323.csv",
@@ -106,7 +110,6 @@ arquivos = [
 # =========================================================
 # Processar todos e juntar
 # =========================================================
-
 dfs = [tratar_arquivo(arq) for arq in arquivos]
 
 df_final = pd.concat(dfs, ignore_index=True)
